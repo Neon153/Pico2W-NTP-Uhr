@@ -1,0 +1,21 @@
+# platform.local.txt fuer den arduino-pico-Core (Earle Philhower)
+#
+# Wirkt nur bei signierten Builds (private.key + public.key im Sketch-Ordner).
+# Sketches ohne Schluessel bleiben unveraendert.
+#
+# 1) Die .bin im Build-Ordner wird durch die signierte Version ersetzt.
+#    Sonst schickt der Netzwerk-Upload der IDE die unsignierte .bin, und der
+#    Pico lehnt sie ab.
+# 2) Die signierte Firmware wird zusaetzlich als firmware.bin in den
+#    Sketch-Ordner kopiert. Das ist die Datei fuer das GitHub-Release.
+#
+# Es wird nur kopiert, wenn die .bin.signed gerade frisch erzeugt wurde.
+# Eine alte .bin.signed aus einem frueheren Build wird nie verwendet.
+#
+# Ablage (Versionsordner anpassen, nach jedem Core-Update neu hineinkopieren):
+#   Arduino-Snap: ~/snap/arduino/current/.arduino15/packages/rp2040/hardware/rp2040/<version>/
+#   Linux:        ~/.arduino15/packages/rp2040/hardware/rp2040/<version>/
+#   Windows:      %LOCALAPPDATA%\Arduino15\packages\rp2040\hardware\rp2040\<version>\
+# Danach die Arduino IDE neu starten.
+
+recipe.objcopy.bin.3.pattern="{runtime.tools.pqt-python3.path}/python3" -I -c "import os,shutil,sys;b,s,o=sys.argv[1:4];f=os.path.isfile(s) and os.path.getmtime(s)>=os.path.getmtime(b);f and shutil.copyfile(s,b);f and shutil.copyfile(s,o)" "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.bin.signed" "{build.source.path}/firmware.bin"
